@@ -1,8 +1,10 @@
-"""Testing EditField class"""
-# pylint: disable=invalid-name
+"""
+Example implementation of an text input class to a vt100 terminal with RP2040 CircuitPython.
+"""
 
+# Who's to blame: Michael Bridak
+# Where to complain: Michael.Bridak@gmail.com or @k6gte@mastodon.radio
 
-#from curses.ascii import isalnum, isprint
 import vt100
 
 
@@ -32,7 +34,7 @@ class EditTextField:
         if character in "0123456789":
             return True
         return False
-        
+
     def isprint(self, character) -> bool:
         """Return True if printable character"""
         character = character.decode()
@@ -93,13 +95,9 @@ class EditTextField:
                         self.textfield = self.textfield.upper()
                     self.cursor_position += 1
             vt100.attr_underline()
-            vt100.addstr(
-                self.position_y, self.position_x, " " * self.max_length
-            )
+            vt100.addstr(self.position_y, self.position_x, " " * self.max_length)
             vt100.attr_off()
-            vt100.addstr(
-                self.position_y, self.position_x, self.textfield
-            )
+            vt100.addstr(self.position_y, self.position_x, self.textfield)
             self._movecursor()
 
     def _movecursor(self) -> None:
@@ -142,7 +140,7 @@ class EditTextField:
             self.set_text("✓")
         else:
             self.set_text(" ")
- 
+
     def text(self) -> str:
         """Returns contents of field"""
         return self.textfield
@@ -173,7 +171,7 @@ class EditTextField:
         vt100.addstr(self.position_y, self.position_x, self.textfield)
         self.set_cursor_position(len(self.textfield) * (not self.is_bool))
         vt100.move(self.position_y, self.position_x + self.cursor_position)
-        
+
     def logger(self, text):
         vt100.save_cursor()
         vt100.home()
