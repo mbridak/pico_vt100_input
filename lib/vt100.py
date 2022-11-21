@@ -38,6 +38,11 @@ def ug0():
 def cls():
     out("\033[2J")
 
+def save_screen():
+	out("\033[?47h")
+	
+def restore_screen():
+	out("\033[?47l")
 
 def home():
     out("\033[H")
@@ -105,6 +110,14 @@ def echo_off():
     out("\033[12l")
 
 
+def cursor_off():
+	out("\033[?25l")
+
+
+def cursor_on():
+	out("\033[?25h")
+
+
 def g1_special():
     out("\033)0")
 
@@ -116,22 +129,42 @@ def attr_off():
 def attr_bold():
     out("\033[1m")
 
-
 def attr_dim():
     out("\033[2m")
 
-
+def attr_dim_off():
+    out("\033[22m")
+    
+    
 def attr_underline():
     out("\033[4m")
 
 
+def attr_underline_off():
+    out("\033[24m")
+    
+
 def attr_blink():
     out("\033[5m")
-
+    
+    
+def attr_blink_off():
+    out("\033[25m")
+    
 
 def attr_reverse():
     out("\033[7m")
+    
+    
+def attr_reverse_off():
+    out("\033[27m")
 
+def color(color: str) -> None:
+	"""
+		FG: 30=black 31=red 32=green 33=yellow 34=blue 35=magenta 36=cyan 37=white 39=default
+		BG: 40=black 41=red 42=green 43=yellow 44=blue 45=magenta 46=cyan 47=white 49=default
+	"""
+	out(f"\033[{color}m")
 
 def set_htab():
     out("\033H", end="")
