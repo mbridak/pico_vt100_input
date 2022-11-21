@@ -5,6 +5,7 @@ Example collection of vt100 terminal convenience functions.
 # Who's to blame: Michael Bridak
 # Where to complain: Michael.Bridak@gmail.com or @k6gte@mastodon.radio
 
+
 import usb_cdc
 
 serial = usb_cdc.console
@@ -213,9 +214,9 @@ def move(y, x):
 
 
 def hline(character=0, length=1):
+    sg0()
     for x in range(0, length):
-        sg0()
-        out("\161")
+        out("q")
     ug0()
 
 
@@ -227,8 +228,8 @@ def mvhline(y, x, character, length):
 def vline(character=0, length=1):
     if character == 0:
         character = 0
+    sg0()
     for x in range(0, length):
-        sg0()
         out("x")
         cursor_down()
         cursor_back()
@@ -248,7 +249,7 @@ def box(y, x, h, w):
     sg0()
     out("\153")
     mvvline(y + 1, x, 0, h - 2)
-    mvvline(y + 1, x + w - 1, 0, h - 2)
+    mvvline(y + 1, x + (w - 1), 0, h - 2)
     move(y + h - 1, x)
     sg0()
     out("\155")
@@ -256,6 +257,14 @@ def box(y, x, h, w):
     sg0()
     out("\152")
     ug0()
+
+
+def autowrapon():
+    out("\033[?7h")
+
+
+def autowrapoff():
+    out("\033[?7l")
 
 
 def rjust(text, count, filler):
