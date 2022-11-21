@@ -103,8 +103,8 @@ class EditTextField:
                     self.cursor_position += 1
             vt100.attr_underline()
             vt100.addstr(self.position_y, self.position_x, " " * self.max_length)
-            vt100.attr_off()
             vt100.addstr(self.position_y, self.position_x, self.textfield)
+            vt100.attr_off()
             self._movecursor()
 
     def _movecursor(self) -> None:
@@ -114,7 +114,7 @@ class EditTextField:
     def placeholder(self, phtext: str) -> None:
         """Show a placeholder"""
         if self.textfield == "":
-            vt100.addnstr(phtext, self.max_length, curses.A_DIM)
+            vt100.addnstr(phtext, self.max_length)
             self._movecursor()
 
     def lowercase(self, allow: bool) -> None:
@@ -174,8 +174,8 @@ class EditTextField:
         """redisplay textfield, move cursor to end"""
         vt100.attr_underline()
         vt100.addstr(self.position_y, self.position_x, " " * self.max_length)
-        vt100.attr_off()
         vt100.addstr(self.position_y, self.position_x, self.textfield)
+        vt100.attr_off()
         self.set_cursor_position(len(self.textfield) * (not self.is_bool))
         vt100.move(self.position_y, self.position_x + self.cursor_position)
 
