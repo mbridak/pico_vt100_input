@@ -5,6 +5,8 @@ Example implementation of an text input class to a vt100 terminal with RP2040 Ci
 # Who's to blame: Michael Bridak
 # Where to complain: Michael.Bridak@gmail.com or @k6gte@mastodon.radio
 
+# pylint: disable=invalid-name
+
 import vt100
 
 
@@ -24,7 +26,7 @@ class EditTextField:
         self.allow_spaces = False
         self.is_URL = False
 
-    def isalnum(self, character) -> bool:
+    def isalnum(self, character: bytes) -> bool:
         """Return True if alpha numeric"""
         character = character.decode()
         if character in "abcdefghijklmnopqrstuvwxyz":
@@ -35,7 +37,7 @@ class EditTextField:
             return True
         return False
 
-    def isprint(self, character) -> bool:
+    def isprint(self, character: bytes) -> bool:
         """Return True if printable character"""
         character = character.decode()
         if character in "!@#$%^&*()_+-=`~[]\\\"{}|;:',<.>/?":
@@ -43,7 +45,12 @@ class EditTextField:
         return False
 
     def getchar(self, character) -> None:
-        """Process character or control sequence"""
+        """
+        Process character or control sequence.
+        character may be either an int -1 if no key was pressed.
+        or character may be a bytes object containing one or more
+        bytes, in the case of vt100 key sequences like for arrow up.
+        """
         if character == -1:
             return
         if self.is_bool:
@@ -110,11 +117,11 @@ class EditTextField:
             vt100.addnstr(phtext, self.max_length, curses.A_DIM)
             self._movecursor()
 
-    def lowercase(self, allow):
+    def lowercase(self, allow: bool) -> None:
         """Allows a field to have lowercase letters"""
         self.allow_lowercase = bool(allow)
 
-    def spaces(self, allow):
+    def spaces(self, allow: bool) -> None:
         """Allows a field to have lowercase letters"""
         self.allow_spaces = bool(allow)
 
@@ -125,15 +132,15 @@ class EditTextField:
     def set_url(self, is_url: bool) -> None:
         self.is_URL = is_url
 
-    def get_state(self):
+    def get_state(self) -> bool:
         """Return the boolean state"""
         return self.my_state
 
-    def toggle_state(self):
+    def toggle_state(self) -> None:
         """Toggles the logical state if it's a bool"""
         self.set_state(not self.my_state)
 
-    def set_state(self, state):
+    def set_state(self, state: bool) -> None:
         """Sets the boolean state"""
         self.my_state = bool(state)
         if self.my_state:
@@ -155,15 +162,15 @@ class EditTextField:
         self.textfield = input_string
         self.cursor_position = len(self.textfield)
 
-    def get_cursor_position(self):
-        """return current cursor position"""
+    def get_cursor_position(self) -> int:
+        """return current cursor position with in the input string"""
         return self.cursor_position
 
     def set_cursor_position(self, position: int) -> None:
-        """set cursor position"""
+        """set cursor position with in the input string"""
         self.cursor_position = position
 
-    def get_focus(self):
+    def get_focus(self) -> None:
         """redisplay textfield, move cursor to end"""
         vt100.attr_underline()
         vt100.addstr(self.position_y, self.position_x, " " * self.max_length)
@@ -172,7 +179,7 @@ class EditTextField:
         self.set_cursor_position(len(self.textfield) * (not self.is_bool))
         vt100.move(self.position_y, self.position_x + self.cursor_position)
 
-    def logger(self, text):
+    def logger(self, text: str) -> None:
         vt100.save_cursor()
         vt100.home()
         vt100.out(text)
