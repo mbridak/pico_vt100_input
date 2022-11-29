@@ -38,11 +38,14 @@ def ug0():
 def cls():
     out("\033[2J")
 
+
 def save_screen():
-	out("\033[?47h")
-	
+    out("\033[?47h")
+
+
 def restore_screen():
-	out("\033[?47l")
+    out("\033[?47l")
+
 
 def home():
     out("\033[H")
@@ -111,11 +114,11 @@ def echo_off():
 
 
 def cursor_off():
-	out("\033[?25l")
+    out("\033[?25l")
 
 
 def cursor_on():
-	out("\033[?25h")
+    out("\033[?25h")
 
 
 def g1_special():
@@ -129,45 +132,49 @@ def attr_off():
 def attr_bold():
     out("\033[1m")
 
+
 def attr_dim():
     out("\033[2m")
 
+
 def attr_dim_off():
     out("\033[22m")
-    
-    
+
+
 def attr_underline():
     out("\033[4m")
 
 
 def attr_underline_off():
     out("\033[24m")
-    
+
 
 def attr_blink():
     out("\033[5m")
-    
-    
+
+
 def attr_blink_off():
     out("\033[25m")
-    
+
 
 def attr_reverse():
     out("\033[7m")
-    
-    
+
+
 def attr_reverse_off():
     out("\033[27m")
 
-def color(color: str) -> None:
-	"""
-		FG: 30=black 31=red 32=green 33=yellow 34=blue 35=magenta 36=cyan 37=white 39=default
-		BG: 40=black 41=red 42=green 43=yellow 44=blue 45=magenta 46=cyan 47=white 49=default
-	"""
-	out(f"\033[{color}m")
+
+def color(colour: str) -> None:
+    """
+    FG: 30=black 31=red 32=green 33=yellow 34=blue 35=magenta 36=cyan 37=white 39=default
+    BG: 40=black 41=red 42=green 43=yellow 44=blue 45=magenta 46=cyan 47=white 49=default
+    """
+    out(f"\033[{colour}m")
+
 
 def set_htab():
-    out("\033H", end="")
+    out("\033H")
 
 
 def clear_htab():
@@ -234,10 +241,14 @@ def scroll_region(top: str, bottom: str):
     out(f"\033[{top};{bottom}r")
 
 
-def addstr(y=-1, x=-1, text="", attribute=0):
+def addstr(y=-1, x=-1, text="", attribute=""):
     if x != -1 or y != -1:
         move(y, x)
+    if attribute:
+        color(attribute)
     out(text)
+    if attribute:
+        attr_off()
 
 
 def move(y, x):
@@ -246,49 +257,72 @@ def move(y, x):
     out(f"\033[{row};{col}H")
 
 
-def hline(character=0, length=1):
+def hline(length=1):
     sg0()
-    for x in range(0, length):
+    for _ in range(0, length):
         out("q")
     ug0()
 
 
-def mvhline(y, x, character, length):
+def mvhline(y, x, length):
     move(y, x)
-    hline(character, length)
+    hline(length)
 
 
-def vline(character=0, length=1):
-    if character == 0:
-        character = 0
+def vline(length=1):
     sg0()
-    for x in range(0, length):
+    for _ in range(0, length):
         out("x")
         cursor_down()
         cursor_back()
     ug0()
 
 
-def mvvline(y, x, character, length):
-    move(y, x)
-    vline(character, length)
-
-
-def box(y, x, h, w):
+def mvvline(y, x, length):
     move(y, x)
     sg0()
-    out("\154")
-    hline(0, w - 2)
+    for pos in range(0, length):
+        move(y + pos, x)
+        out("x")
+    ug0()
+
+
+def title(y, x, w, title_text):
+    position = int((w / 2) - (len(title_text) / 2))
+    move(y, x + position)
+    ug0()
+    out(title_text)
+
+
+def title2(y, x, w, title_text):
+    position = int((w / 2) - (len(title_text) / 2))
+    move(y, x + position - 1)
     sg0()
-    out("\153")
-    mvvline(y + 1, x, 0, h - 2)
-    mvvline(y + 1, x + (w - 1), 0, h - 2)
+    out("u")
+    ug0()
+    out(title_text)
+    sg0()
+    out("t")
+    ug0()
+
+
+def box(y, x, h, w, title_text=""):
+    move(y, x)
+    sg0()
+    out("l")
+    hline(w - 2)
+    sg0()
+    out("k")
+    if title_text:
+        title(y, x, w, title_text)
+    mvvline(y + 1, x, h - 2)
+    mvvline(y + 1, x + (w - 1), h - 2)
     move(y + h - 1, x)
     sg0()
-    out("\155")
-    hline(0, w - 2)
+    out("m")
+    hline(w - 2)
     sg0()
-    out("\152")
+    out("j")
     ug0()
 
 
@@ -303,6 +337,11 @@ def autowrapoff():
 def rjust(text, count, filler):
     needed = count - len(text)
     return (filler * needed) + text
+
+
+def ljust(text, count, filler):
+    needed = count - len(text)
+    return text + (filler * needed)
 
 
 def out(data):
