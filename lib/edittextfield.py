@@ -25,6 +25,8 @@ class EditTextField:
         self.allow_lowercase = False
         self.allow_spaces = False
         self.is_URL = False
+        self.placeholder = ""
+        self.underline = False
 
     def isalnum(self, character: bytes) -> bool:
         """Return True if alpha numeric"""
@@ -101,9 +103,13 @@ class EditTextField:
                     if not self.allow_lowercase and not self.is_URL:
                         self.textfield = self.textfield.upper()
                     self.cursor_position += 1
-            vt100.attr_underline()
+            if self.underline:
+                vt100.attr_underline()
             vt100.addstr(self.position_y, self.position_x, " " * self.max_length)
             vt100.addstr(self.position_y, self.position_x, self.textfield)
+            if self.placeholder and not len(self.textfield):
+                vt100.attr_dim()
+                vt100.addstr(self.position_y, self.position_x, self.placeholder)
             vt100.attr_off()
             self._movecursor()
 
@@ -111,11 +117,11 @@ class EditTextField:
         """moves cursor to current position"""
         vt100.move(self.position_y, self.position_x + self.cursor_position)
 
-    def placeholder(self, phtext: str) -> None:
-        """Show a placeholder"""
-        if self.textfield == "":
-            vt100.addnstr(phtext, self.max_length)
-            self._movecursor()
+    # def placeholder(self, phtext: str) -> None:
+      #  """Show a placeholder"""
+      #  if self.textfield == "":
+      #      vt100.addnstr(phtext, self.max_length)
+      #      self._movecursor()
 
     def lowercase(self, allow: bool) -> None:
         """Allows a field to have lowercase letters"""
@@ -172,9 +178,13 @@ class EditTextField:
 
     def get_focus(self) -> None:
         """redisplay textfield, move cursor to end"""
-        vt100.attr_underline()
+        if self.underline:
+            vt100.attr_underline()
         vt100.addstr(self.position_y, self.position_x, " " * self.max_length)
         vt100.addstr(self.position_y, self.position_x, self.textfield)
+        if self.placeholder and not len(self.textfield):
+            vt100.attr_dim()
+            vt100.addstr(self.position_y, self.position_x, self.placeholder)
         vt100.attr_off()
         self.set_cursor_position(len(self.textfield) * (not self.is_bool))
         vt100.move(self.position_y, self.position_x + self.cursor_position)
