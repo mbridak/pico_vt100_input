@@ -107,7 +107,7 @@ class EditTextField:
                 vt100.attr_underline()
             vt100.addstr(self.position_y, self.position_x, " " * self.max_length)
             vt100.addstr(self.position_y, self.position_x, self.textfield)
-            if self.placeholder and not len(self.textfield):
+            if self.placeholder and len(self.textfield) == 0:
                 vt100.attr_dim()
                 vt100.addstr(self.position_y, self.position_x, self.placeholder)
             vt100.attr_off()
@@ -118,10 +118,10 @@ class EditTextField:
         vt100.move(self.position_y, self.position_x + self.cursor_position)
 
     # def placeholder(self, phtext: str) -> None:
-      #  """Show a placeholder"""
-      #  if self.textfield == "":
-      #      vt100.addnstr(phtext, self.max_length)
-      #      self._movecursor()
+    #  """Show a placeholder"""
+    #  if self.textfield == "":
+    #      vt100.addnstr(phtext, self.max_length)
+    #      self._movecursor()
 
     def lowercase(self, allow: bool) -> None:
         """Allows a field to have lowercase letters"""
@@ -136,6 +136,10 @@ class EditTextField:
         self.is_bool = is_bool
 
     def set_url(self, is_url: bool) -> None:
+        """
+        Sets input type to URL, which allows Alpha, Numeric and
+        other printable characters.
+        """
         self.is_URL = is_url
 
     def get_state(self) -> bool:
@@ -182,7 +186,7 @@ class EditTextField:
             vt100.attr_underline()
         vt100.addstr(self.position_y, self.position_x, " " * self.max_length)
         vt100.addstr(self.position_y, self.position_x, self.textfield)
-        if self.placeholder and not len(self.textfield):
+        if self.placeholder and len(self.textfield) == 0:
             vt100.attr_dim()
             vt100.addstr(self.position_y, self.position_x, self.placeholder)
         vt100.attr_off()
@@ -190,6 +194,10 @@ class EditTextField:
         vt100.move(self.position_y, self.position_x + self.cursor_position)
 
     def logger(self, text: str) -> None:
+        """
+        Convenience function to output string to the home position,
+        then restore cursor to previous position.
+        """
         vt100.save_cursor()
         vt100.home()
         vt100.out(text)
